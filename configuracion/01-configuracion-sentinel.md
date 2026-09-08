@@ -72,7 +72,7 @@ El workspace `law-soc-lab` funciona como repositorio central de los eventos envi
 
 La siguiente captura muestra el Log Analytics Workspace utilizado para el laboratorio.
 
-![Log Analytics Workspace](configuracion/evidencias-configuracion/01-log-analytics-workspace.png).
+![Log Analytics Workspace](evidencias-configuracion/01-log-analytics-workspace.png).
 
 ---
 
