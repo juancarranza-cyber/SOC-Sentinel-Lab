@@ -43,21 +43,3 @@ Log Analytics Workspace
 ↓  
 Microsoft Sentinel
 
-## Investigaciones
-
-### INC-001 — Análisis de autenticación
-
-Investigación de múltiples intentos fallidos de inicio de sesión (Event ID 4625) seguidos de una autenticación exitosa (Event ID 4624).
-
-Estado: Documentación en progreso.
-
-## Próximas etapas
-
-- Detección de múltiples intentos fallidos de autenticación.
-- Creación de reglas analíticas en Microsoft Sentinel.
-- Investigación de PowerShell.
-- Análisis de creación de procesos.
-- Implementación de Sysmon.
-- Análisis de actividad de red.
-- Mapeo con MITRE ATT&CK.
-- Automatización de tareas mediante Python.
