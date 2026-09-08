@@ -1,0 +1,6 @@
+### Validación de eventos en Microsoft Sentinel
+
+La siguiente evidencia muestra los eventos de seguridad recibidos por Microsoft Sentinel:
+
+![Eventos recibidos en Microsoft Sentinel](evidencias/06-validacion-securityevent.png)
+
