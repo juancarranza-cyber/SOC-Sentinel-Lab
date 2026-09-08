@@ -100,7 +100,7 @@ El `LogonType 2` corresponde a un inicio de sesión interactivo/local en Windows
 
 ### Evidencia — Agrupación de intentos fallidos
 
-![Resumen de intentos fallidos](evidencias/02-resumen-intentos-fallidos.png)
+![Resumen de intentos fallidos](evidencias-inc-001/02-resumen-intentos-fallidos.png)
 
 ---
 
@@ -136,7 +136,7 @@ El evento `4624` ocurrió aproximadamente **3.77 segundos después del último e
 
 ### Evidencia — Correlación de eventos
 
-![Correlación entre eventos 4625 y 4624](evidencias/03-correlacion-4625-4624.png)
+![Correlación entre eventos 4625 y 4624](evidencias-inc-001/03-correlacion-4625-4624.png)
 
 ---
 
