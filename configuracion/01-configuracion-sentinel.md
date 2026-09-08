@@ -86,7 +86,7 @@ Esto permite utilizar el workspace como parte de una plataforma SIEM para realiz
 
 La siguiente captura muestra Microsoft Sentinel asociado al workspace `law-soc-lab`.
 
-![Microsoft Sentinel](evidencias/02-microsoft-sentinel.png)
+![Microsoft Sentinel](evidencias-configuracion/02-microsoft-sentinel.png)
 
 ---
 
@@ -102,7 +102,7 @@ Esta solución proporciona los componentes necesarios para trabajar con eventos 
 
 La solución aparece correctamente instalada en Microsoft Sentinel.
 
-![Windows Security Events](evidencias/03-windows-security-events.png)
+![Windows Security Events](evidencias-configuracion/03-windows-security-events.png)
 
 ---
 
@@ -120,7 +120,7 @@ Esto permitió utilizar Azure Monitor Agent para recopilar telemetría desde el 
 
 La siguiente captura demuestra que el endpoint Windows se encuentra conectado mediante Azure Arc.
 
-![Endpoint conectado mediante Azure Arc](evidencias/04-azure-arc-endpoint.png)
+![Endpoint conectado mediante Azure Arc](evidencias-configuracion/04-azure-arc-endpoint.png)
 
 ---
 
@@ -138,7 +138,7 @@ La DCR fue asociada con el endpoint Windows conectado mediante Azure Arc.
 
 La siguiente captura muestra la DCR utilizada para recopilar eventos de seguridad.
 
-![Data Collection Rule](evidencias/05-data-collection-rule.png)
+![Data Collection Rule](evidencias-configuracion/05-data-collection-rule.png)
 
 ---
 
@@ -174,7 +174,7 @@ Este filtro indica que únicamente se deben recopilar los eventos especificados 
 
 La siguiente captura muestra el filtro configurado en la DCR.
 
-![Filtro XPath de eventos de seguridad](evidencias/06-filtro-eventos-dcr.png)
+![Filtro XPath de eventos de seguridad](evidencias-configuracion/06-filtro-eventos-dcr.png)
 
 ---
 
@@ -221,7 +221,7 @@ La consulta permitió comprobar la presencia de los cinco Event ID configurados:
 
 La siguiente captura muestra la consulta KQL ejecutada y los eventos recibidos.
 
-![Validación de ingesta en Microsoft Sentinel](evidencias/07-validacion-ingesta-securityevent.png)
+![Validación de ingesta en Microsoft Sentinel](evidencias-configuracion/07-validacion-ingesta-securityevent.png)
 
 ---
 
