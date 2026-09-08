@@ -52,7 +52,7 @@ Se identificaron tres eventos `4625` asociados con la misma cuenta.
 
 ### Evidencia — Intentos fallidos de autenticación
 
-![Intentos fallidos Event ID 4625](evidencias/01-intentos-fallidos-4625.png)
+![Intentos fallidos Event ID 4625](INC-001-analisis-autenticacion/evidencias-inc-001)
 
 ---
 
