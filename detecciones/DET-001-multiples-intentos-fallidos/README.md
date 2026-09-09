@@ -119,9 +119,9 @@ Por lo tanto, cualquier resultado devuelto por la consulta ya cumple la condici�
 
 Antes de crear la regla se verificaron los parámetros de detección, Entity Mapping, Custom Details, configuración de incidentes y programación.
 
-![Resumen de configuración 1](evidencias-det-001/05a-resumen-regla-analitica.png)
+![Resumen de configuración 1](evidencias-det-001/05A-resumen-regla-analitica.png)
 
-![Resumen de configuración 2](evidencias-det-001/05b-resumen-regla-analitica.png)
+![Resumen de configuración 2](evidencias-det-001/05B-resumen-regla-analitica.png)
 
 La regla fue creada y habilitada correctamente en Microsoft Sentinel.
 
