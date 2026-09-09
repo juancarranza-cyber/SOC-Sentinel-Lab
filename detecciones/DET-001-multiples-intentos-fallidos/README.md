@@ -77,7 +77,7 @@ Configuración principal:
 
 Se utilizó severidad `Low` porque múltiples errores de autenticación no representan necesariamente actividad maliciosa y requieren análisis contextual.
 
-![Configuración de la regla](evidencias/02-configuracion-regla-analitica.png)
+![Configuración de la regla](evidencias-det-001/02-configuracion-regla-analitica.png)
 
 ---
 
@@ -93,7 +93,7 @@ Para enriquecer las alertas e incidentes, se configuraron las siguientes entidad
 
 También se configuró `IntentosFallidos` como Custom Detail para conservar en la alerta la cantidad de intentos que activaron la detección.
 
-![Entity Mapping](evidencias/03-mapeo-entidades.png)
+![Entity Mapping](evidencias-det-001/03-mapeo-entidades.png)
 
 ---
 
@@ -111,7 +111,7 @@ El umbral de 3 intentos no se configura en el Alert threshold de Sentinel, ya qu
 
 Por lo tanto, cualquier resultado devuelto por la consulta ya cumple la condición definida por la detección.
 
-![Programación de la regla](evidencias/04-programacion-regla.png)
+![Programación de la regla](evidencias-det-001/04-programacion-regla.png)
 
 ---
 
@@ -119,13 +119,13 @@ Por lo tanto, cualquier resultado devuelto por la consulta ya cumple la condici�
 
 Antes de crear la regla se verificaron los parámetros de detección, Entity Mapping, Custom Details, configuración de incidentes y programación.
 
-![Resumen de configuración 1](evidencias/05a-resumen-regla-analitica.png)
+![Resumen de configuración 1](evidencias-det-001/05a-resumen-regla-analitica.png)
 
-![Resumen de configuración 2](evidencias/05b-resumen-regla-analitica.png)
+![Resumen de configuración 2](evidencias-det-001/05b-resumen-regla-analitica.png)
 
 La regla fue creada y habilitada correctamente en Microsoft Sentinel.
 
-![Regla analítica creada](evidencias/06-regla-analitica-creada.png)
+![Regla analítica creada](evidencias-det-001/06-regla-analitica-creada.png)
 
 ---
 
@@ -137,7 +137,7 @@ Los eventos fueron registrados como Event ID 4625 y enviados a Microsoft Sentine
 
 La Analytics Rule identificó el patrón y generó automáticamente una alerta y un incidente.
 
-![Incidente generado](evidencias/07-incidente-generado.png)
+![Incidente generado](evidencias-det-001/07-incidente-generado.png)
 
 ---
 
@@ -153,7 +153,7 @@ Durante la prueba se identificaron:
 
 El grafo del incidente permitió visualizar la relación entre estas entidades.
 
-![Grafo de entidades](evidencias/08-grafo-entidades-incidente.png)
+![Grafo de entidades](evidencias-det-001/08-grafo-entidades-incidente.png)
 
 ---
 
@@ -172,7 +172,7 @@ La alerta generada registró:
 
 El Custom Detail configurado permitió mostrar directamente `IntentosFallidos: 6` dentro de la alerta.
 
-![Detalles de la alerta](evidencias/09-detalles-alerta.png)
+![Detalles de la alerta](evidencias-det-001/09-detalles-alerta.png)
 
 ---
 
@@ -191,7 +191,7 @@ La investigación mostró la siguiente secuencia:
 
 Esta correlación permitió obtener contexto adicional antes de determinar el resultado de la investigación.
 
-![Correlación 4625 y 4624](evidencias/10-correlacion-alerta-4625-4624.png)
+![Correlación 4625 y 4624](evidencias-det-001/10-correlacion-alerta-4625-4624.png)
 
 ---
 
@@ -209,7 +209,7 @@ El incidente fue resuelto con la clasificación:
 
 No se identificaron indicadores que justificaran escalamiento o acciones de contención.
 
-![Cierre del incidente](evidencias/11-cierre-incidente.png)
+![Cierre del incidente](evidencias-det-001/11-cierre-incidente.png)
 
 ---
 
