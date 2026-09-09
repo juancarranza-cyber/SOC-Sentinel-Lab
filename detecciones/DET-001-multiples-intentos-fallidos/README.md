@@ -53,7 +53,7 @@ La consulta completa y comentada se encuentra en [`deteccion.kql`](deteccion.kql
 
 ### Evidencia
 
-![Consulta KQL de detección](evidencias/01-consulta-kql-deteccion.png)
+![Consulta KQL de detección](evidencias-det-001/01-consulta-kql-deteccion.png)
 
 ---
 
