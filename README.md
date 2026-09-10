@@ -89,7 +89,7 @@ La correlación permitió determinar que la actividad correspondía a una prueba
 
 **Habilidades aplicadas:** análisis de autenticación, KQL, correlación temporal, Event ID 4625/4624 y triage SOC.
 
-[Ver investigación completa](Investigaciones/INC-001-analisis-autenticacion/investigacion.md)
+[Ver investigación completa](Investigaciones/INC-001-analisis-autenticacion/Proceso.md)
 
 ---
 
