@@ -89,7 +89,11 @@ La correlación permitió determinar que la actividad correspondía a una prueba
 
 **Habilidades aplicadas:** análisis de autenticación, KQL, correlación temporal, Event ID 4625/4624 y triage SOC.
 
-[Ver investigación completa](Investigaciones/INC-001-analisis-autenticacion/Proceso.md)
+<p align="center">
+<a href="Investigaciones/INC-001-analisis-autenticacion/Proceso.md">
+<img src="https://img.shields.io/badge/VER_INVESTIGACIÓN_INC--001-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
+</a>
+</p>
 
 ---
 
@@ -119,7 +123,11 @@ La relación padre-hijo fue validada mediante la correlación entre `NewProcessI
 
 **Habilidades aplicadas:** Event ID 4688, análisis de procesos, PID correlation, CommandLine, process tree, KQL y endpoint investigation.
 
-[Ver investigación completa](Investigaciones/INC-002-analisis-creacion-procesos/investigacion.md)
+<p align="center">
+<a href="Investigaciones/INC-002-analisis-creacion-procesos/investigacion.md">
+<img src="https://img.shields.io/badge/VER_INVESTIGACIÓN_INC--001-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
+</a>
+</p>
 
 ---
 
@@ -147,7 +155,11 @@ La investigación posterior determinó que correspondía a una prueba de segurid
 
 **Habilidades aplicadas:** Detection Engineering, Analytics Rules, KQL, Entity Mapping, alert triage e incident investigation.
 
-[Ver detección completa](detecciones/DET-001-multiples-intentos-fallidos/README.md)
+<p align="center">
+<a href="detecciones/DET-001-multiples-intentos-fallidos/README.md">
+<img src="https://img.shields.io/badge/VER_INVESTIGACIÓN_INC--001-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
+</a>
+</p>
 
 ---
 
