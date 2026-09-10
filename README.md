@@ -125,7 +125,7 @@ La relación padre-hijo fue validada mediante la correlación entre `NewProcessI
 
 <p align="center">
 <a href="Investigaciones/INC-002-analisis-creacion-procesos/investigacion.md">
-<img src="https://img.shields.io/badge/VER_INVESTIGACIÓN_INC--001-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
+<img src="https://img.shields.io/badge/VER_INVESTIGACIÓN_INC--002-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
 </a>
 </p>
 
@@ -157,7 +157,7 @@ La investigación posterior determinó que correspondía a una prueba de segurid
 
 <p align="center">
 <a href="detecciones/DET-001-multiples-intentos-fallidos/README.md">
-<img src="https://img.shields.io/badge/VER_INVESTIGACIÓN_INC--001-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
+<img src="https://img.shields.io/badge/VER_Deteccion_DET--001-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
 </a>
 </p>
 
