@@ -338,7 +338,7 @@ La ejecución coincidió específicamente con el indicador:
 
 ### Evidencia
 
-![Investigación del evento PowerShell](evidencias-det-002/08-evento-powershell-investigacion.png)
+![Investigación del evento PowerShell](evidencias-det-002/09-evento-powershell-investigacion.png)
 
 ---
 
