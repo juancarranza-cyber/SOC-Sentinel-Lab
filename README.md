@@ -34,8 +34,9 @@ El laboratorio se desarrolla progresivamente, incorporando nuevas fuentes de tel
 - Crear reglas de detección mediante Analytics Rules.
 - Generar y analizar alertas e incidentes.
 - Aplicar procesos de triage y clasificación.
+- Analizar líneas de comandos de PowerShell.
+- Mapear detecciones a MITRE ATT&CK.
 - Documentar investigaciones siguiendo un flujo de trabajo SOC.
-- Incorporar MITRE ATT&CK cuando la evidencia permita asociar técnicas.
 - Utilizar Python posteriormente para apoyar tareas de análisis y automatización.
 
 ---
@@ -163,6 +164,70 @@ La investigación posterior determinó que correspondía a una prueba de segurid
 
 ---
 
+## DET-002 — Ejecución sospechosa de PowerShell
+
+Regla de detección desarrollada en Microsoft Sentinel para identificar ejecuciones de PowerShell que contengan indicadores de línea de comandos que requieran investigación.
+
+La detección utiliza eventos de creación de procesos de Windows mediante **Event ID 4688** y analiza principalmente el campo `CommandLine`.
+
+Entre los indicadores configurados se encuentran:
+
+- `-ExecutionPolicy Bypass`
+- `-EncodedCommand`
+- `-enc`
+- `-WindowStyle Hidden`
+- `Invoke-WebRequest`
+- `FromBase64String`
+- `IEX`
+
+Durante la validación se realizó una ejecución controlada de PowerShell utilizando:
+
+```text
+-ExecutionPolicy Bypass
+```
+
+La actividad fue detectada correctamente por la regla analítica, generando una alerta y posteriormente un incidente en Microsoft Sentinel.
+
+Durante la investigación se analizaron:
+
+- TimeGenerated
+- Account
+- Computer
+- NewProcessName
+- ParentProcessName
+- CommandLine
+
+La detección fue asociada con MITRE ATT&CK:
+
+```text
+Táctica:
+Execution
+
+Técnica:
+T1059 — Command and Scripting Interpreter
+
+Subtécnica:
+T1059.001 — PowerShell
+```
+
+Después del análisis, el incidente fue clasificado como:
+
+```text
+Informational, expected activity — Security testing
+```
+
+debido a que la ejecución fue realizada intencionalmente dentro del laboratorio para validar el funcionamiento de DET-002.
+
+**Habilidades aplicadas:** Detection Engineering, PowerShell analysis, Event ID 4688, CommandLine analysis, KQL, Analytics Rules, Entity Mapping, MITRE ATT&CK, alert triage e incident investigation.
+
+<p align="center">
+<a href="detecciones/DET-002-powershell-sospechoso/README.md">
+<img src="https://img.shields.io/badge/VER_Deteccion_DET--002-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
+</a>
+</p>
+
+---
+
 # Flujo de trabajo SOC
 
 El laboratorio busca reproducir progresivamente un flujo de trabajo similar al utilizado en operaciones de seguridad:
@@ -204,9 +269,10 @@ Cierre / Escalamiento
 | Generación de alertas e incidentes | Completado |
 | Investigación de creación de procesos | Completado |
 | Correlación padre-hijo mediante PID | Completado |
-| Análisis avanzado de PowerShell | En desarrollo |
+| Análisis de PowerShell mediante CommandLine | Completado |
+| Detección de indicadores sospechosos de PowerShell | Completado |
+| MITRE ATT&CK — PowerShell T1059.001 | Completado |
 | Sysmon | Pendiente |
-| MITRE ATT&CK | Pendiente |
 | Herramientas Python | Pendiente |
 
 ---
@@ -226,7 +292,8 @@ SOC-Sentinel-Lab/
 │   └── INC-002-analisis-creacion-procesos/
 │
 ├── detecciones/
-│   └── DET-001-multiples-intentos-fallidos/
+│   ├── DET-001-multiples-intentos-fallidos/
+│   └── DET-002-powershell-sospechoso/
 │
 └── herramientas-python/
     └── Próximamente
@@ -238,10 +305,10 @@ SOC-Sentinel-Lab/
 
 El laboratorio continuará incorporando nuevas capacidades de análisis y detección, incluyendo:
 
-- Análisis avanzado de ejecuciones de PowerShell.
-- Telemetría de Sysmon.
+- Telemetría avanzada mediante Sysmon.
 - Reconstrucción de process trees más complejos.
-- Nuevas reglas de detección en Microsoft Sentinel.
-- Mapeo de actividad a MITRE ATT&CK cuando exista evidencia suficiente.
+- Desarrollo de nuevas reglas de detección en Microsoft Sentinel.
+- Ampliación de detecciones relacionadas con PowerShell.
+- Correlación entre diferentes fuentes de telemetría.
+- Ampliación del mapeo de actividad a MITRE ATT&CK.
 - Desarrollo de herramientas Python para apoyar investigaciones SOC.
-
