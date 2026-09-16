@@ -444,3 +444,27 @@ El laboratorio permitió practicar:
 - Investigación y clasificación de alertas.
 
 La regla DET-002 quedó validada correctamente dentro del laboratorio SOC con Microsoft Sentinel.
+
+## Resolución del incidente
+
+Después de completar la investigación, el incidente fue cerrado en Microsoft Sentinel.
+
+La actividad fue clasificada como:
+
+**Informational, expected activity — Security testing**
+
+La ejecución de PowerShell fue realizada intencionalmente dentro del laboratorio para validar el funcionamiento de la regla DET-002.
+
+Se confirmó que:
+
+- La regla detectó correctamente `-ExecutionPolicy Bypass`.
+- Se generó una alerta.
+- Se creó un incidente.
+- Se identificaron correctamente el usuario y el equipo involucrados.
+- No se observó actividad maliciosa adicional.
+
+Por este motivo, el incidente fue cerrado como una actividad esperada de pruebas de seguridad.
+
+### Evidencia
+
+![Incidente DET-002 resuelto](evidencias-det-002/09-incidente-det002-resuelto.png)
