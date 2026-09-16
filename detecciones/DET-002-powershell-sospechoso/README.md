@@ -445,6 +445,8 @@ El laboratorio permitió practicar:
 
 La regla DET-002 quedó validada correctamente dentro del laboratorio SOC con Microsoft Sentinel.
 
+---
+
 ## Resolución del incidente
 
 Después de completar la investigación, el incidente fue cerrado en Microsoft Sentinel.
