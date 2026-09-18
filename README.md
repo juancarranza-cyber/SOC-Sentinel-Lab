@@ -70,6 +70,49 @@ Microsoft Sentinel
 
 ---
 
+# Configuración y fuentes de telemetría
+
+## SYS-001 — Integración de Sysmon con Microsoft Sentinel
+
+Integración de Sysmon como nueva fuente de telemetría del endpoint Windows hacia Microsoft Sentinel.
+
+Se configuró una Data Collection Rule independiente para recopilar eventos del canal:
+
+```text
+Microsoft-Windows-Sysmon/Operational
+```
+
+Inicialmente se habilitó la recopilación de:
+
+- Event ID 1 — Process Create
+- Event ID 3 — Network Connection
+
+Durante la implementación también se diagnosticó un problema de Azure Monitor Agent relacionado con un token expirado que impedía descargar nuevas configuraciones.
+
+Después de reinstalar Azure Monitor Agent se validó correctamente el flujo:
+
+```text
+Sysmon
+   ↓
+Azure Monitor Agent
+   ↓
+dcr-sysmon-soc-lab
+   ↓
+Log Analytics Workspace
+   ↓
+Microsoft Sentinel
+```
+
+**Habilidades aplicadas:** Sysmon, Azure Monitor Agent, Data Collection Rules, XPath, Azure Arc, Log Analytics, KQL y troubleshooting de telemetría.
+
+<p align="center">
+<a href="configuracion/SYS-001-integracion-sysmon-sentinel/README.md">
+<img src="https://img.shields.io/badge/VER_CONFIGURACIÓN_SYS--001-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
+</a>
+</p>
+
+---
+
 # Investigaciones
 
 ## INC-001 — Análisis de múltiples intentos fallidos de autenticación
