@@ -18,6 +18,7 @@ El laboratorio se desarrolla progresivamente, incorporando nuevas fuentes de tel
 - Azure Monitor Agent (AMA)
 - Log Analytics Workspace
 - Windows Security Events
+- Sysmon
 - KQL (Kusto Query Language)
 - Windows 10
 - GitHub
@@ -46,26 +47,29 @@ El laboratorio se desarrolla progresivamente, incorporando nuevas fuentes de tel
 ```text
 Windows Endpoint
       │
-      ▼
-Azure Arc
-      │
-      ▼
-Azure Monitor Agent (AMA)
-      │
-      ▼
-Data Collection Rule (DCR)
-      │
-      ▼
-Log Analytics Workspace
-      │
-      ▼
-Microsoft Sentinel
-      │
-      ├── KQL
-      ├── Investigaciones
-      ├── Analytics Rules
-      ├── Alertas
-      └── Incidentes
+      ├── Windows Security Events
+      └── Sysmon
+              │
+              ▼
+          Azure Arc
+              │
+              ▼
+     Azure Monitor Agent (AMA)
+              │
+              ▼
+     Data Collection Rules (DCR)
+              │
+              ▼
+      Log Analytics Workspace
+              │
+              ▼
+       Microsoft Sentinel
+              │
+              ├── KQL
+              ├── Investigaciones
+              ├── Analytics Rules
+              ├── Alertas
+              └── Incidentes
 ```
 
 ---
@@ -315,7 +319,10 @@ Cierre / Escalamiento
 | Análisis de PowerShell mediante CommandLine | Completado |
 | Detección de indicadores sospechosos de PowerShell | Completado |
 | MITRE ATT&CK — PowerShell T1059.001 | Completado |
-| Sysmon | Pendiente |
+| Integración de Sysmon → Sentinel | Completado |
+| Sysmon Event ID 1 — Process Create | Completado |
+| Sysmon Event ID 3 — Network Connection | Completado |
+| Investigación de procesos y conexiones con Sysmon | Próxima etapa |
 | Herramientas Python | Pendiente |
 
 ---
@@ -328,7 +335,10 @@ SOC-Sentinel-Lab/
 ├── README.md
 │
 ├── configuracion/
-│   └── Configuración del entorno Microsoft Sentinel
+│   ├── Configuración del entorno Microsoft Sentinel
+│   └── SYS-001-integracion-sysmon-sentinel/
+│       ├── README.md
+│       └── evidencias-sys-001/
 │
 ├── Investigaciones/
 │   ├── INC-001-analisis-autenticacion/
@@ -348,10 +358,11 @@ SOC-Sentinel-Lab/
 
 El laboratorio continuará incorporando nuevas capacidades de análisis y detección, incluyendo:
 
-- Telemetría avanzada mediante Sysmon.
+- INC-003 — Investigación de procesos y conexiones de red con Sysmon.
+- Correlación de Sysmon Event ID 1 y Event ID 3 mediante ProcessGuid/ProcessId.
 - Reconstrucción de process trees más complejos.
 - Desarrollo de nuevas reglas de detección en Microsoft Sentinel.
-- Ampliación de detecciones relacionadas con PowerShell.
+- Desarrollo de DET-003 utilizando telemetría de Sysmon.
 - Correlación entre diferentes fuentes de telemetría.
 - Ampliación del mapeo de actividad a MITRE ATT&CK.
 - Desarrollo de herramientas Python para apoyar investigaciones SOC.
