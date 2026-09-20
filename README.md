@@ -366,7 +366,7 @@ Cierre / Escalamiento
 | Integración de Sysmon → Sentinel | Completado |
 | Sysmon Event ID 1 — Process Create | Completado |
 | Sysmon Event ID 3 — Network Connection | Completado |
-| Investigación de procesos y conexiones con Sysmon | Próxima etapa |
+| Investigación de procesos y conexiones con Sysmon | Completado |
 | Herramientas Python | Pendiente |
 
 ---
