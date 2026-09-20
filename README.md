@@ -179,6 +179,50 @@ La relación padre-hijo fue validada mediante la correlación entre `NewProcessI
 
 ---
 
+## INC-003 — Investigación de procesos y conexiones de red con Sysmon
+
+Investigación de telemetría Sysmon utilizando Event ID 1 y Event ID 3 para correlacionar la creación de un proceso con una conexión de red realizada por ese mismo proceso.
+
+Durante la prueba controlada se ejecutó PowerShell con:
+
+```text
+Test-NetConnection www.microsoft.com -Port 443
+```
+
+La investigación permitió relacionar:
+
+```text
+Event ID 1 — Process Create
+        ↓
+ProcessGuid
+        ↓
+Event ID 3 — Network Connection
+```
+
+Se utilizaron campos como:
+
+- ProcessGuid
+- ProcessId
+- Image
+- CommandLine
+- Protocol
+- DestinationIp
+- DestinationPort
+
+Mediante KQL se realizó una correlación utilizando `join` sobre `ProcessGuid`, permitiendo identificar en una sola vista el proceso ejecutado, el comando utilizado y la conexión de red asociada.
+
+La actividad correspondía a una prueba controlada dentro del laboratorio y no se identificó actividad maliciosa.
+
+**Habilidades aplicadas:** Sysmon, Event ID 1, Event ID 3, KQL, `extract()`, `extend`, `join`, ProcessGuid correlation, CommandLine analysis, network analysis y SOC investigation.
+
+<p align="center">
+<a href="Investigaciones/INC-003-procesos-conexiones-sysmon/README.md">
+<img src="https://img.shields.io/badge/VER_INVESTIGACIÓN_INC--003-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
+</a>
+</p>
+
+---
+
 # Detecciones
 
 ## DET-001 — Múltiples intentos fallidos de inicio de sesión
