@@ -85,36 +85,7 @@ Windows Endpoint
 
 ## SYS-001 — Integración de Sysmon con Microsoft Sentinel
 
-Integración de Sysmon como nueva fuente de telemetría del endpoint Windows hacia Microsoft Sentinel.
-
-Se configuró una Data Collection Rule independiente para recopilar eventos del canal:
-
-```text
-Microsoft-Windows-Sysmon/Operational
-```
-
-Inicialmente se habilitó la recopilación de:
-
-- Event ID 1 — Process Create
-- Event ID 3 — Network Connection
-
-Durante la implementación también se diagnosticó un problema de Azure Monitor Agent relacionado con un token expirado que impedía descargar nuevas configuraciones.
-
-Después de reinstalar Azure Monitor Agent se validó correctamente el flujo:
-
-```text
-Sysmon
-   ↓
-Azure Monitor Agent
-   ↓
-dcr-sysmon-soc-lab
-   ↓
-Log Analytics Workspace
-   ↓
-Microsoft Sentinel
-```
-
-**Habilidades aplicadas:** Sysmon, Azure Monitor Agent, Data Collection Rules, XPath, Azure Arc, Log Analytics, KQL y troubleshooting de telemetría.
+Integración de Sysmon como fuente de telemetría del endpoint Windows hacia Microsoft Sentinel mediante Azure Arc, Azure Monitor Agent y una Data Collection Rule. Se configuró la recopilación inicial de **Event ID 1 — Process Create** y **Event ID 3 — Network Connection**, validando posteriormente su llegada al Log Analytics Workspace y Microsoft Sentinel. Durante el proceso también se diagnosticaron y resolvieron problemas relacionados con la configuración y autenticación de Azure Monitor Agent.
 
 <p align="center">
 <a href="configuracion/SYS-001-integracion-sysmon-sentinel/README.md">
@@ -126,82 +97,7 @@ Microsoft Sentinel
 
 ## SYS-002 — Ampliación de Sysmon con Event ID 11 File Create
 
-Ampliación de la telemetría recopilada desde Sysmon para incorporar eventos relacionados con la creación de archivos en el endpoint.
-
-La Data Collection Rule:
-
-```text
-dcr-sysmon-soc-lab
-```
-
-fue modificada para ampliar la consulta XPath.
-
-La configuración pasó de:
-
-```text
-Microsoft-Windows-Sysmon/Operational!*[System[(EventID=1 or EventID=3)]]
-```
-
-a:
-
-```text
-Microsoft-Windows-Sysmon/Operational!*[System[(EventID=1 or EventID=3 or EventID=11)]]
-```
-
-La telemetría recopilada ahora incluye:
-
-```text
-Event ID 1  — Process Create
-Event ID 3  — Network Connection
-Event ID 11 — File Create
-```
-
-Durante la validación se creó un archivo PowerShell de prueba:
-
-```text
-sysmon-det004-test.ps1
-```
-
-Sysmon registró correctamente información como:
-
-- ProcessGuid
-- ProcessId
-- Image
-- TargetFilename
-
-Posteriormente se validó la recepción del Event ID 11 en Microsoft Sentinel.
-
-Durante el proceso también se diagnosticó nuevamente un problema de Azure Monitor Agent relacionado con:
-
-```text
-TokenExpired
-HTTP 401
-GetConfig api returned errorcode: 401
-```
-
-AMA mantenía una versión antigua de la DCR y no había descargado la configuración que incluía Event ID 11.
-
-Después de reinstalar únicamente `AzureMonitorWindowsAgent`, se validó correctamente la nueva configuración y comenzó la ingestión de Event ID 11.
-
-El flujo final quedó:
-
-```text
-PowerShell
-    ↓
-File Create
-    ↓
-Sysmon Event ID 11
-    ↓
-Azure Monitor Agent
-    ↓
-dcr-sysmon-soc-lab
-    ↓
-Log Analytics Workspace
-    ↓
-Microsoft Sentinel
-```
-
-**Habilidades aplicadas:** Sysmon, Event ID 11, File Create monitoring, Azure Monitor Agent, Data Collection Rules, XPath, Azure Arc, Microsoft Sentinel, KQL y troubleshooting de AMA.
+Ampliación de la Data Collection Rule de Sysmon para incorporar **Event ID 11 — File Create** y obtener visibilidad sobre archivos creados en el endpoint. Se validó el evento primero de forma local y posteriormente en Microsoft Sentinel. Durante la implementación se identificó nuevamente un problema `TokenExpired` en Azure Monitor Agent, se recuperó la configuración de la DCR y finalmente se confirmó la ingestión correcta de la nueva telemetría.
 
 <p align="center">
 <a href="configuracion/SYS-002-ampliacion-sysmon-filecreate/README.md">
@@ -215,21 +111,7 @@ Microsoft Sentinel
 
 ## INC-001 — Análisis de múltiples intentos fallidos de autenticación
 
-Investigación de eventos de autenticación de Windows utilizando Event ID 4625 y Event ID 4624.
-
-Se identificaron múltiples intentos fallidos de inicio de sesión para una misma cuenta dentro de un período corto y posteriormente se correlacionaron con una autenticación exitosa.
-
-Durante el análisis se utilizaron campos como:
-
-- Account
-- Computer
-- IpAddress
-- LogonType
-- TimeGenerated
-
-La correlación permitió determinar que la actividad correspondía a una prueba controlada dentro del laboratorio y no existían indicadores suficientes para considerarla actividad maliciosa.
-
-**Habilidades aplicadas:** análisis de autenticación, KQL, correlación temporal, Event ID 4625/4624 y triage SOC.
+Investigación de eventos de autenticación de Windows mediante **Event ID 4625 y 4624**. Se analizaron múltiples intentos fallidos de inicio de sesión realizados en un período corto y posteriormente se correlacionaron con una autenticación exitosa. La investigación permitió practicar análisis temporal, campos de autenticación, consultas KQL y el proceso de triage utilizado por un analista SOC.
 
 <p align="center">
 <a href="Investigaciones/INC-001-analisis-autenticacion/Proceso.md">
@@ -241,29 +123,7 @@ La correlación permitió determinar que la actividad correspondía a una prueba
 
 ## INC-002 — Análisis de creación y relación de procesos
 
-Investigación de eventos de creación de procesos de Windows mediante Event ID 4688.
-
-Se analizaron ejecuciones de PowerShell y Notepad para estudiar relaciones entre procesos padre e hijo.
-
-Durante la investigación se habilitó y analizó información de línea de comandos y se utilizaron identificadores de proceso para reconstruir relaciones de ejecución.
-
-Se consiguió correlacionar:
-
-```text
-explorer.exe
-     │
-     ▼
-powershell.exe
-     │
-     ▼
-powershell.exe
-     │
-     └── CommandLine
-```
-
-La relación padre-hijo fue validada mediante la correlación entre `NewProcessId` y `ProcessId` y posteriormente automatizada mediante una consulta KQL.
-
-**Habilidades aplicadas:** Event ID 4688, análisis de procesos, PID correlation, CommandLine, process tree, KQL y endpoint investigation.
+Investigación de eventos **4688 — Process Creation** para analizar ejecuciones de PowerShell y Notepad y reconstruir relaciones entre procesos padre e hijo. Se utilizaron identificadores de proceso, información de `CommandLine` y consultas KQL para comprender cómo un analista puede reconstruir una cadena de ejecución y determinar el origen de un proceso observado en el endpoint.
 
 <p align="center">
 <a href="Investigaciones/INC-002-analisis-creacion-procesos/investigacion.md">
@@ -275,39 +135,7 @@ La relación padre-hijo fue validada mediante la correlación entre `NewProcessI
 
 ## INC-003 — Investigación de procesos y conexiones de red con Sysmon
 
-Investigación de telemetría Sysmon utilizando Event ID 1 y Event ID 3 para correlacionar la creación de un proceso con una conexión de red realizada por ese mismo proceso.
-
-Durante la prueba controlada se ejecutó PowerShell con:
-
-```text
-Test-NetConnection www.microsoft.com -Port 443
-```
-
-La investigación permitió relacionar:
-
-```text
-Event ID 1 — Process Create
-        ↓
-ProcessGuid
-        ↓
-Event ID 3 — Network Connection
-```
-
-Se utilizaron campos como:
-
-- ProcessGuid
-- ProcessId
-- Image
-- CommandLine
-- Protocol
-- DestinationIp
-- DestinationPort
-
-Mediante KQL se realizó una correlación utilizando `join` sobre `ProcessGuid`, permitiendo identificar en una sola vista el proceso ejecutado, el comando utilizado y la conexión de red asociada.
-
-La actividad correspondía a una prueba controlada dentro del laboratorio y no se identificó actividad maliciosa.
-
-**Habilidades aplicadas:** Sysmon, Event ID 1, Event ID 3, KQL, `extract()`, `extend`, `join`, ProcessGuid correlation, CommandLine analysis, network analysis y SOC investigation.
+Investigación utilizando **Sysmon Event ID 1 y Event ID 3** para relacionar la creación de un proceso PowerShell con una conexión de red realizada por la misma instancia. Mediante `ProcessGuid` y KQL `join` se correlacionaron datos del proceso, línea de comandos, protocolo, dirección IP y puerto de destino, permitiendo reconstruir la relación entre ejecución y actividad de red.
 
 <p align="center">
 <a href="Investigaciones/INC-003-procesos-conexiones-sysmon/README.md">
@@ -319,59 +147,7 @@ La actividad correspondía a una prueba controlada dentro del laboratorio y no s
 
 ## INC-004 — Investigación de creación de archivos con Sysmon
 
-Investigación de telemetría Sysmon utilizando Event ID 1 y Event ID 11 para determinar qué proceso fue responsable de crear un archivo.
-
-Durante la prueba controlada se ejecutó PowerShell para crear:
-
-```text
-inc004-file.ps1
-```
-
-La actividad permitió correlacionar:
-
-```text
-Event ID 1 — Process Create
-        ↓
-ProcessGuid
-        ↓
-Event ID 11 — File Create
-```
-
-Durante la investigación se analizaron campos como:
-
-- ProcessGuid
-- ProcessId
-- Image
-- CommandLine
-- TargetFilename
-- TimeGenerated
-
-La correlación mediante KQL permitió relacionar la instancia específica de `powershell.exe` con el archivo creado.
-
-La lógica utilizada fue:
-
-```text
-powershell.exe
-      │
-      ├── ProcessGuid
-      ├── ProcessId
-      ├── CommandLine
-      │
-      ▼
-Set-Content
-      │
-      ▼
-inc004-file.ps1
-      │
-      ▼
-Sysmon Event ID 11
-```
-
-También se construyó una línea temporal utilizando Event ID 1 y Event ID 11 para observar la relación entre la creación del proceso y la creación del archivo.
-
-La actividad correspondía a una prueba controlada dentro del laboratorio y no se identificó comportamiento malicioso.
-
-**Habilidades aplicadas:** Sysmon, Event ID 1, Event ID 11, File Create analysis, PowerShell analysis, ProcessGuid correlation, KQL `join`, endpoint investigation y SOC investigation.
+Investigación de **Sysmon Event ID 1 y Event ID 11** para determinar qué proceso fue responsable de crear un archivo `.ps1` en el endpoint. Se correlacionaron `ProcessGuid`, `ProcessId`, `Image`, `CommandLine` y `TargetFilename` mediante KQL, logrando relacionar una ejecución específica de PowerShell con el archivo generado y construyendo una línea temporal de la actividad.
 
 <p align="center">
 <a href="Investigaciones/INC-004-creacion-archivos-sysmon/README.md">
@@ -385,25 +161,7 @@ La actividad correspondía a una prueba controlada dentro del laboratorio y no s
 
 ## DET-001 — Múltiples intentos fallidos de inicio de sesión
 
-Regla de detección desarrollada en Microsoft Sentinel para identificar cuentas con 3 o más intentos fallidos de autenticación dentro de una ventana de 5 minutos.
-
-La detección utiliza eventos Event ID 4625 y fue implementada como una Scheduled Analytics Rule.
-
-La regla incluye:
-
-- Consulta KQL.
-- Umbral de detección.
-- Entity Mapping.
-- Custom Details.
-- Generación automática de alertas.
-- Creación de incidentes.
-- Proceso de triage y clasificación.
-
-Durante la validación controlada se generaron seis intentos fallidos, provocando correctamente una alerta y un incidente en Microsoft Sentinel.
-
-La investigación posterior determinó que correspondía a una prueba de seguridad controlada.
-
-**Habilidades aplicadas:** Detection Engineering, Analytics Rules, KQL, Entity Mapping, alert triage e incident investigation.
+Regla analítica desarrollada en Microsoft Sentinel para detectar cuentas con **3 o más intentos fallidos de autenticación dentro de una ventana de 5 minutos** utilizando Event ID 4625. La detección fue validada mediante una prueba controlada que generó una alerta y un incidente, permitiendo realizar posteriormente el proceso de investigación, clasificación y cierre.
 
 <p align="center">
 <a href="detecciones/DET-001-multiples-intentos-fallidos/README.md">
@@ -415,59 +173,7 @@ La investigación posterior determinó que correspondía a una prueba de segurid
 
 ## DET-002 — Ejecución sospechosa de PowerShell
 
-Regla de detección desarrollada en Microsoft Sentinel para identificar ejecuciones de PowerShell que contengan indicadores de línea de comandos que requieran investigación.
-
-La detección utiliza eventos de creación de procesos de Windows mediante **Event ID 4688** y analiza principalmente el campo `CommandLine`.
-
-Entre los indicadores configurados se encuentran:
-
-- `-ExecutionPolicy Bypass`
-- `-EncodedCommand`
-- `-enc`
-- `-WindowStyle Hidden`
-- `Invoke-WebRequest`
-- `FromBase64String`
-- `IEX`
-
-Durante la validación se realizó una ejecución controlada de PowerShell utilizando:
-
-```text
--ExecutionPolicy Bypass
-```
-
-La actividad fue detectada correctamente por la regla analítica, generando una alerta y posteriormente un incidente en Microsoft Sentinel.
-
-Durante la investigación se analizaron:
-
-- TimeGenerated
-- Account
-- Computer
-- NewProcessName
-- ParentProcessName
-- CommandLine
-
-La detección fue asociada con MITRE ATT&CK:
-
-```text
-Táctica:
-Execution
-
-Técnica:
-T1059 — Command and Scripting Interpreter
-
-Subtécnica:
-T1059.001 — PowerShell
-```
-
-Después del análisis, el incidente fue clasificado como:
-
-```text
-Informational, expected activity — Security testing
-```
-
-debido a que la ejecución fue realizada intencionalmente dentro del laboratorio para validar el funcionamiento de DET-002.
-
-**Habilidades aplicadas:** Detection Engineering, PowerShell analysis, Event ID 4688, CommandLine analysis, KQL, Analytics Rules, Entity Mapping, MITRE ATT&CK, alert triage e incident investigation.
+Regla analítica orientada a identificar ejecuciones de PowerShell que contienen indicadores relevantes dentro de `CommandLine`, como `-ExecutionPolicy Bypass`, `-EncodedCommand`, `Invoke-WebRequest` o `IEX`. La detección utiliza Event ID 4688, fue asociada con **MITRE ATT&CK T1059.001 — PowerShell** y se validó mediante una prueba controlada que generó una alerta e incidente en Sentinel.
 
 <p align="center">
 <a href="detecciones/DET-002-powershell-sospechoso/README.md">
@@ -479,103 +185,23 @@ debido a que la ejecución fue realizada intencionalmente dentro del laboratorio
 
 ## DET-003 — PowerShell con actividad de red correlacionada mediante Sysmon
 
-Regla de detección desarrollada en Microsoft Sentinel para identificar procesos de PowerShell que ejecutan `Test-NetConnection` y presentan una conexión de red asociada.
-
-A diferencia de DET-002, esta detección no analiza únicamente la línea de comandos. DET-003 correlaciona dos tipos diferentes de telemetría generada por Sysmon:
-
-```text
-Event ID 1 — Process Create
-        ↓
-ProcessGuid
-        ↓
-Event ID 3 — Network Connection
-```
-
-La lógica permite comprobar que una conexión de red fue realizada por la misma instancia del proceso PowerShell observada durante su creación.
-
-Durante la validación controlada se ejecutó:
-
-```text
-powershell.exe -NoProfile -Command "Test-NetConnection www.microsoft.com -Port 443"
-```
-
-La consulta KQL correlacionó información como:
-
-- TimeGenerated
-- Computer
-- ProcessGuid
-- ProcessId
-- Image
-- CommandLine
-- Protocol
-- DestinationIp
-- DestinationPort
-
-La regla utiliza `join` sobre `ProcessGuid` para relacionar el evento de creación del proceso con la conexión de red.
-
-La configuración principal fue:
-
-```text
-Severity:
-Medium
-
-Run query every:
-5 minutes
-
-Lookup data from the last:
-10 minutes
-
-Alert threshold:
-Greater than 0
-
-Event grouping:
-Group all events into a single alert
-```
-
-La detección fue asociada con MITRE ATT&CK:
-
-```text
-Táctica:
-Execution
-
-Técnica:
-T1059 — Command and Scripting Interpreter
-
-Subtécnica:
-T1059.001 — PowerShell
-```
-
-Durante la prueba, Microsoft Sentinel generó correctamente una alerta y un incidente.
-
-La investigación confirmó:
-
-```text
-Image:
-powershell.exe
-
-CommandLine:
-Test-NetConnection www.microsoft.com -Port 443
-
-Protocol:
-tcp
-
-DestinationPort:
-443
-```
-
-Después del triage, el incidente fue clasificado como:
-
-```text
-Informational, expected activity — Security testing
-```
-
-debido a que la actividad fue generada intencionalmente dentro del laboratorio para validar DET-003.
-
-**Habilidades aplicadas:** Detection Engineering, Sysmon, Event ID 1, Event ID 3, PowerShell analysis, ProcessGuid correlation, KQL `join`, network activity analysis, Analytics Rules, MITRE ATT&CK, alert investigation e incident triage.
+Regla analítica que correlaciona **Sysmon Event ID 1 y Event ID 3** para detectar procesos PowerShell que presentan actividad de red asociada. La detección utiliza `ProcessGuid` para relacionar el proceso con la conexión correspondiente y permite analizar `CommandLine`, protocolo, dirección IP y puerto de destino. La regla fue validada mediante `Test-NetConnection`, generando correctamente una alerta y un incidente.
 
 <p align="center">
 <a href="detecciones/DET-003-powershell-actividad-red/README.md">
 <img src="https://img.shields.io/badge/VER_Deteccion_DET--003-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
+</a>
+</p>
+
+---
+
+## DET-004 — PowerShell creando archivos PS1 en directorios temporales
+
+Regla analítica desarrollada para identificar procesos PowerShell que crean archivos `.ps1` dentro de directorios temporales. La detección correlaciona **Sysmon Event ID 1 y Event ID 11 mediante ProcessGuid**, combinando información del proceso, línea de comandos y archivo creado. La regla fue validada mediante una actividad controlada que generó correctamente una alerta e incidente, seguido de su investigación, clasificación y resolución.
+
+<p align="center">
+<a href="detecciones/DET-004-powershell-filecreate-temp/README.md">
+<img src="https://img.shields.io/badge/VER_Deteccion_DET--004-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
 </a>
 </p>
 
@@ -638,6 +264,8 @@ Cierre / Escalamiento
 | INC-004 — Investigación de creación de archivos con Sysmon | Completado |
 | Correlación Event ID 1 ↔ Event ID 11 mediante ProcessGuid | Completado |
 | Análisis de File Create mediante PowerShell | Completado |
+| DET-004 — PowerShell creando archivos PS1 en directorios temporales | Completado |
+| Investigación y triage de incidente DET-004 | Completado |
 | Herramientas Python | Pendiente |
 
 ---
@@ -676,30 +304,14 @@ SOC-Sentinel-Lab/
 │   ├── DET-001-multiples-intentos-fallidos/
 │   ├── DET-002-powershell-sospechoso/
 │   │
-│   └── DET-003-powershell-actividad-red/
+│   ├── DET-003-powershell-actividad-red/
+│   │   ├── README.md
+│   │   └── evidencias-det-003/
+│   │
+│   └── DET-004-powershell-filecreate-temp/
 │       ├── README.md
-│       └── evidencias-det-003/
+│       └── evidencias-det-004/
 │
 └── herramientas-python/
     └── Próximamente
 ```
-
----
-
-## Próximas etapas
-
-El laboratorio continuará incorporando nuevas capacidades de análisis, detección y automatización.
-
-Las siguientes etapas previstas son:
-
-- Desarrollo de DET-004 utilizando Sysmon Event ID 11.
-- Detección de creación de archivos mediante PowerShell.
-- Análisis de archivos creados en directorios como `%TEMP%`.
-- Correlación automática entre Process Create y File Create.
-- Ampliación de la telemetría de Sysmon con nuevos Event ID.
-- Reconstrucción de process trees más complejos.
-- Correlación entre proceso, red y archivos.
-- Desarrollo de nuevas reglas de detección en Microsoft Sentinel.
-- Ampliación del mapeo a MITRE ATT&CK.
-- Desarrollo de herramientas Python para apoyar investigaciones SOC.
-- Automatización de tareas repetitivas mediante Python.
