@@ -33,6 +33,8 @@ El laboratorio se desarrolla progresivamente, incorporando nuevas fuentes de tel
 - Correlacionar diferentes eventos de seguridad.
 - Analizar relaciones entre procesos padre e hijo.
 - Correlacionar procesos con conexiones de red mediante Sysmon.
+- Investigar creación de archivos mediante Sysmon.
+- Correlacionar procesos con archivos utilizando ProcessGuid.
 - Crear reglas de detección mediante Analytics Rules.
 - Generar y analizar alertas e incidentes.
 - Aplicar procesos de triage y clasificación.
@@ -50,6 +52,10 @@ Windows Endpoint
       │
       ├── Windows Security Events
       └── Sysmon
+              │
+              ├── Event ID 1  — Process Create
+              ├── Event ID 3  — Network Connection
+              └── Event ID 11 — File Create
               │
               ▼
            Azure Arc
@@ -113,6 +119,93 @@ Microsoft Sentinel
 <p align="center">
 <a href="configuracion/SYS-001-integracion-sysmon-sentinel/README.md">
 <img src="https://img.shields.io/badge/VER_CONFIGURACIÓN_SYS--001-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
+</a>
+</p>
+
+---
+
+## SYS-002 — Ampliación de Sysmon con Event ID 11 File Create
+
+Ampliación de la telemetría recopilada desde Sysmon para incorporar eventos relacionados con la creación de archivos en el endpoint.
+
+La Data Collection Rule:
+
+```text
+dcr-sysmon-soc-lab
+```
+
+fue modificada para ampliar la consulta XPath.
+
+La configuración pasó de:
+
+```text
+Microsoft-Windows-Sysmon/Operational!*[System[(EventID=1 or EventID=3)]]
+```
+
+a:
+
+```text
+Microsoft-Windows-Sysmon/Operational!*[System[(EventID=1 or EventID=3 or EventID=11)]]
+```
+
+La telemetría recopilada ahora incluye:
+
+```text
+Event ID 1  — Process Create
+Event ID 3  — Network Connection
+Event ID 11 — File Create
+```
+
+Durante la validación se creó un archivo PowerShell de prueba:
+
+```text
+sysmon-det004-test.ps1
+```
+
+Sysmon registró correctamente información como:
+
+- ProcessGuid
+- ProcessId
+- Image
+- TargetFilename
+
+Posteriormente se validó la recepción del Event ID 11 en Microsoft Sentinel.
+
+Durante el proceso también se diagnosticó nuevamente un problema de Azure Monitor Agent relacionado con:
+
+```text
+TokenExpired
+HTTP 401
+GetConfig api returned errorcode: 401
+```
+
+AMA mantenía una versión antigua de la DCR y no había descargado la configuración que incluía Event ID 11.
+
+Después de reinstalar únicamente `AzureMonitorWindowsAgent`, se validó correctamente la nueva configuración y comenzó la ingestión de Event ID 11.
+
+El flujo final quedó:
+
+```text
+PowerShell
+    ↓
+File Create
+    ↓
+Sysmon Event ID 11
+    ↓
+Azure Monitor Agent
+    ↓
+dcr-sysmon-soc-lab
+    ↓
+Log Analytics Workspace
+    ↓
+Microsoft Sentinel
+```
+
+**Habilidades aplicadas:** Sysmon, Event ID 11, File Create monitoring, Azure Monitor Agent, Data Collection Rules, XPath, Azure Arc, Microsoft Sentinel, KQL y troubleshooting de AMA.
+
+<p align="center">
+<a href="configuracion/SYS-002-ampliacion-sysmon-filecreate/README.md">
+<img src="https://img.shields.io/badge/VER_CONFIGURACIÓN_SYS--002-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
 </a>
 </p>
 
@@ -219,6 +312,70 @@ La actividad correspondía a una prueba controlada dentro del laboratorio y no s
 <p align="center">
 <a href="Investigaciones/INC-003-procesos-conexiones-sysmon/README.md">
 <img src="https://img.shields.io/badge/VER_INVESTIGACIÓN_INC--003-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
+</a>
+</p>
+
+---
+
+## INC-004 — Investigación de creación de archivos con Sysmon
+
+Investigación de telemetría Sysmon utilizando Event ID 1 y Event ID 11 para determinar qué proceso fue responsable de crear un archivo.
+
+Durante la prueba controlada se ejecutó PowerShell para crear:
+
+```text
+inc004-file.ps1
+```
+
+La actividad permitió correlacionar:
+
+```text
+Event ID 1 — Process Create
+        ↓
+ProcessGuid
+        ↓
+Event ID 11 — File Create
+```
+
+Durante la investigación se analizaron campos como:
+
+- ProcessGuid
+- ProcessId
+- Image
+- CommandLine
+- TargetFilename
+- TimeGenerated
+
+La correlación mediante KQL permitió relacionar la instancia específica de `powershell.exe` con el archivo creado.
+
+La lógica utilizada fue:
+
+```text
+powershell.exe
+      │
+      ├── ProcessGuid
+      ├── ProcessId
+      ├── CommandLine
+      │
+      ▼
+Set-Content
+      │
+      ▼
+inc004-file.ps1
+      │
+      ▼
+Sysmon Event ID 11
+```
+
+También se construyó una línea temporal utilizando Event ID 1 y Event ID 11 para observar la relación entre la creación del proceso y la creación del archivo.
+
+La actividad correspondía a una prueba controlada dentro del laboratorio y no se identificó comportamiento malicioso.
+
+**Habilidades aplicadas:** Sysmon, Event ID 1, Event ID 11, File Create analysis, PowerShell analysis, ProcessGuid correlation, KQL `join`, endpoint investigation y SOC investigation.
+
+<p align="center">
+<a href="Investigaciones/INC-004-creacion-archivos-sysmon/README.md">
+<img src="https://img.shields.io/badge/VER_INVESTIGACIÓN_INC--004-00FF41?style=for-the-badge&logo=microsoftsentinel&logoColor=black&labelColor=000000" />
 </a>
 </p>
 
@@ -471,11 +628,16 @@ Cierre / Escalamiento
 | Integración de Sysmon → Sentinel | Completado |
 | Sysmon Event ID 1 — Process Create | Completado |
 | Sysmon Event ID 3 — Network Connection | Completado |
+| Sysmon Event ID 11 — File Create | Completado |
+| SYS-002 — Ampliación de telemetría Sysmon | Completado |
 | Investigación de procesos y conexiones con Sysmon | Completado |
 | Correlación Event ID 1 ↔ Event ID 3 mediante ProcessGuid | Completado |
 | DET-003 — PowerShell con actividad de red mediante Sysmon | Completado |
 | Correlación de proceso y red mediante KQL `join` | Completado |
 | Investigación y triage de incidente DET-003 | Completado |
+| INC-004 — Investigación de creación de archivos con Sysmon | Completado |
+| Correlación Event ID 1 ↔ Event ID 11 mediante ProcessGuid | Completado |
+| Análisis de File Create mediante PowerShell | Completado |
 | Herramientas Python | Pendiente |
 
 ---
@@ -489,20 +651,31 @@ SOC-Sentinel-Lab/
 │
 ├── configuracion/
 │   ├── Configuración del entorno Microsoft Sentinel
-│   └── SYS-001-integracion-sysmon-sentinel/
+│   │
+│   ├── SYS-001-integracion-sysmon-sentinel/
+│   │   ├── README.md
+│   │   └── evidencias-sys-001/
+│   │
+│   └── SYS-002-ampliacion-sysmon-filecreate/
 │       ├── README.md
-│       └── evidencias-sys-001/
+│       └── evidencias-sys-002/
 │
 ├── Investigaciones/
 │   ├── INC-001-analisis-autenticacion/
 │   ├── INC-002-analisis-creacion-procesos/
-│   └── INC-003-procesos-conexiones-sysmon/
+│   │
+│   ├── INC-003-procesos-conexiones-sysmon/
+│   │   ├── README.md
+│   │   └── evidencias-inc-003/
+│   │
+│   └── INC-004-creacion-archivos-sysmon/
 │       ├── README.md
-│       └── evidencias-inc-003/
+│       └── evidencias-inc-004/
 │
 ├── detecciones/
 │   ├── DET-001-multiples-intentos-fallidos/
 │   ├── DET-002-powershell-sospechoso/
+│   │
 │   └── DET-003-powershell-actividad-red/
 │       ├── README.md
 │       └── evidencias-det-003/
@@ -515,16 +688,18 @@ SOC-Sentinel-Lab/
 
 ## Próximas etapas
 
-El laboratorio continuará incorporando nuevas capacidades de análisis, detección y automatización, incluyendo:
+El laboratorio continuará incorporando nuevas capacidades de análisis, detección y automatización.
 
-- Ampliación de la telemetría recopilada mediante Sysmon.
-- Incorporación de nuevos Event ID de Sysmon.
+Las siguientes etapas previstas son:
+
+- Desarrollo de DET-004 utilizando Sysmon Event ID 11.
+- Detección de creación de archivos mediante PowerShell.
+- Análisis de archivos creados en directorios como `%TEMP%`.
+- Correlación automática entre Process Create y File Create.
+- Ampliación de la telemetría de Sysmon con nuevos Event ID.
 - Reconstrucción de process trees más complejos.
-- Correlación entre múltiples procesos y conexiones de red.
+- Correlación entre proceso, red y archivos.
 - Desarrollo de nuevas reglas de detección en Microsoft Sentinel.
-- Desarrollo de DET-004 utilizando nueva telemetría o comportamiento.
-- Correlación entre diferentes fuentes de telemetría.
-- Ampliación del mapeo de actividad a MITRE ATT&CK.
-- Análisis de comportamientos de red más complejos.
+- Ampliación del mapeo a MITRE ATT&CK.
 - Desarrollo de herramientas Python para apoyar investigaciones SOC.
-- Automatización de tareas repetitivas de análisis mediante Python.
+- Automatización de tareas repetitivas mediante Python.
